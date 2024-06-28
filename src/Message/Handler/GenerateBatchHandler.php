@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
+use Symfony\Component\Workflow\WorkflowInterface;
 use const JSON_INVALID_UTF8_IGNORE;
 use const JSON_PRESERVE_ZERO_FRACTION;
 use const JSON_PRETTY_PRINT;
@@ -299,7 +300,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->urlGenerator->setContext($this->initialRequestContext);
     }
 
-    private function getWorkflow(FeedInterface $feed): Workflow
+    private function getWorkflow(FeedInterface $feed): WorkflowInterface
     {
         try {
             $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
@@ -323,7 +324,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         return fopen('php://temp', 'w+b');
     }
 
-    private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
+    private function applyErrorTransition(WorkflowInterface $workflow, FeedInterface $feed): void
     {
         // if the feed is already errored we won't want to throw an exception
         if ($feed->isErrored()) {
